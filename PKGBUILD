@@ -5,6 +5,7 @@ pkgdesc="Namib Hardware Detection"
 arch=('i686' 'x86_64')
 url="https://github.com/meerkatbrowser/nhwd"
 license=("GPL")
+depends=('nhwd-db')
 makedepends=('git')
 
 build() {
