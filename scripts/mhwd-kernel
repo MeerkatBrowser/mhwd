@@ -31,10 +31,10 @@ kernel_install() {
 
     for kernel in "$@"; do
         [[ $kernel = "rmc" ]] && rmc=1 && continue
-        [[ $kernel != linux[0-9][0-9]?([0-9]) && $kernel != linux-rt-*manjaro && $kernel != "rmc" ]] && err "Invalid argument.\nPlease choose one of the $(kernel_repo)"
+        [[ $kernel != linux && $kernel != linux-lts && $kernel != linux-zen && $kernel != linux-hardened && $kernel != "rmc" ]] && err "Invalid argument.\nPlease choose one of the $(kernel_repo)"
         [[ $current = $kernel ]] && err "You can't reinstall your current kernel. Please use 'pacman -Syu' instead to update."
         [[ -z $(pacman -Ssq "^$kernel$") ]] && err "Please make sure if the given kernel(s) exist(s).\n$(kernel_repo)"
-        
+
         for pkg in $(pacman -Qqs "$current"); do
             pkg=${pkg//$current/$kernel}
             [[ -n $(pacman -Ssq "^$pkg$" | grep -E "^$pkg$|^$pkg-\S+$") ]] && pkginstall+=("$pkg")
@@ -58,14 +58,19 @@ kernel_install() {
 
 kernel_repo() {
     printf "\e[32mavailable kernels:\e[0m\n"
-    pacman -Ssq "^linux[0-9][0-9]?([0-9])$" | while read -r; do echo "   * $REPLY"; done
-    pacman -Ssq "^linux-rt.*([o])$" | while read -r; do echo "   * $REPLY"; done
+    pacman -Ssq "^linux$" | while read -r; do echo "   * $REPLY"; done
+    pacman -Ssq "^linux-lts$" | while read -r; do echo "   * $REPLY"; done
+    pacman -Ssq "^linux-hardened$" | while read -r; do echo "   * $REPLY"; done
+    pacman -Ssq "^linux-zen$" | while read -r; do echo "   * $REPLY"; done
 }
 
 kernel_list() {
     printf "\e[32mCurrently running:\e[0m $(uname -r) (${current})\n"
     echo "The following kernels are installed in your system:"
-    pacman -Qqs "^linux[0-9-][0-9r]?.*[0-9o]$" | grep -v "r8" | while read -r; do echo "   * $REPLY"; done
+    pacman -Qqs "^linux$" | grep -v "r8" | while read -r; do echo "   * $REPLY"; done
+    pacman -Qqs "^linux-lts$" | grep -v "r8" | while read -r; do echo "   * $REPLY"; done
+    pacman -Qqs "^linux-hardened$" | grep -v "r8" | while read -r; do echo "   * $REPLY"; done
+    pacman -Qqs "^linux-zen$" | grep -v "r8" | while read -r; do echo "   * $REPLY"; done
 }
 
 kernel_remove() {
