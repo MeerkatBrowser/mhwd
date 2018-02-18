@@ -1,5 +1,5 @@
 pkgname=nhwd
-pkgver=17.11
+pkgver=18.02
 pkgrel=1
 pkgdesc="Namib Hardware Detection"
 arch=('i686' 'x86_64')
